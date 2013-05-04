@@ -220,6 +220,7 @@
 	
 	var forwardSpeed = 0.1;
 	var backwardSpeed = 0.1;
+	var crouchingDelta = 0;
 	
 	function handleMotion(){
 		if (motion.forward){
@@ -230,6 +231,13 @@
 		if (motion.backward){
 			cameraX -= (Math.cos(yaw) * forwardSpeed);
 			cameraZ -= (Math.sin(yaw) * forwardSpeed);
+		}
+		
+		if (motion.crouching){
+			crouchingDelta = -3;
+		}
+		else {
+			crouchingDelta = 0;
 		}
 	}
 	
@@ -242,7 +250,7 @@
         mat4.identity(mvMatrix);
 		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
 		mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-		mat4.translate(mvMatrix, [-cameraX, -cameraY, -cameraZ]);
+		mat4.translate(mvMatrix, [-cameraX, -(cameraY + crouchingDelta), -cameraZ]);
 		
 		for (var i = 0; i < drawList.length; i++){
 			var wall = drawList[i];
@@ -299,6 +307,10 @@
 			case 83: // "S"
 				motion.backward = true;
 				break;
+				
+			case 17: // Ctrl
+				motion.crouching = true;
+				break;
 		}
 	}
 	
@@ -312,6 +324,10 @@
 			
 			case 83: // "S"
 				motion.backward = false;
+				break;
+				
+			case 17: // Ctrl
+				motion.crouching = false;
 				break;
 		}
 	}
