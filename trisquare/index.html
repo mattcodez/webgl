@@ -215,9 +215,21 @@
 	var cameraY = 7;
 	var cameraZ = 4;
 	
+	var pitch = -27;
+	var yaw = -20;
+	
+	var forwardSpeed = 0.1;
+	var backwardSpeed = 0.1;
+	
 	function handleMotion(){
 		if (motion.forward){
-			cameraZ += 0.1;
+			cameraX += (Math.cos(yaw) * forwardSpeed);
+			cameraZ += (Math.sin(yaw) * forwardSpeed);
+		}
+		
+		if (motion.backward){
+			cameraX -= (Math.cos(yaw) * forwardSpeed);
+			cameraZ -= (Math.sin(yaw) * forwardSpeed);
 		}
 	}
 	
@@ -228,8 +240,6 @@
         mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 		
         mat4.identity(mvMatrix);
-		var pitch = -27;
-		var yaw = -20;
 		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
 		mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
 		mat4.translate(mvMatrix, [-cameraX, -cameraY, -cameraZ]);
@@ -254,26 +264,10 @@
 	    //mat4.rotate(mvMatrix, degToRad(rTri), [0, 1, 0]);
     }
 
-
-    var lastTime = 0;
-
-    function animate() {
-        var timeNow = new Date().getTime();
-        if (lastTime != 0) {
-            var elapsed = timeNow - lastTime;
-
-            rTri += (90 * elapsed) / 1000.0;
-            rSquare += (75 * elapsed) / 1000.0;
-        }
-        lastTime = timeNow;
-    }
-
-
     function tick() {
         requestAnimFrame(tick);
 		handleMotion();
         drawScene();
-        animate();
     }
 
 
@@ -297,15 +291,28 @@
 	function handleKeyDown(event){
 		currentlyPressedKeys[event.which] = true;
 		
-		if (event.which == 87) { // "W"
-			motion.forward = true;
+		switch(event.which){
+			case 87: // "W"
+				motion.forward = true;
+				break;
+			
+			case 83: // "S"
+				motion.backward = true;
+				break;
 		}
 	}
 	
 	function handleKeyUp(event){
 		delete currentlyPressedKeys[event.which];
-		if (event.which == 87){ // "W"
-			motion.forward = false;
+		
+		switch(event.which){
+			case 87: // "W"
+				motion.forward = false;
+				break;
+			
+			case 83: // "S"
+				motion.backward = false;
+				break;
 		}
 	}
 
