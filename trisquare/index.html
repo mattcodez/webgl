@@ -188,6 +188,24 @@
 			,
 			drawList
 		);
+		
+		createWall({
+			width:5,
+			height:5,
+			position:[0.0,0.0,-15.0],
+			color:[0.0,1.0,1.0,1.0]}
+			,
+			drawList
+		);
+		
+		createWall({
+			width:7,
+			height:7,
+			position:[0.0,0.0,10.0],
+			color:[1.0,0.0,0.0,1.0]}
+			,
+			drawList
+		);
     }
 
     var rTri = 0;
@@ -198,8 +216,15 @@
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-
+		
         mat4.identity(mvMatrix);
+		var pitch = -27;
+		var yaw = -20;
+		var x = -5, y = 7, z = 4;
+		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
+		mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
+		mat4.translate(mvMatrix, [-x, -y, -z]);
+		
 		for (var i = 0; i < drawList.length; i++){
 			var wall = drawList[i];
 			
