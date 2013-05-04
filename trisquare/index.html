@@ -211,7 +211,17 @@
     var rTri = 0;
     var rSquare = 0;
 
-    function drawScene() {
+    var cameraX = -5;
+	var cameraY = 7;
+	var cameraZ = 4;
+	
+	function handleMotion(){
+		if (motion.forward){
+			cameraZ += 0.1;
+		}
+	}
+	
+	function drawScene() {
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -220,10 +230,9 @@
         mat4.identity(mvMatrix);
 		var pitch = -27;
 		var yaw = -20;
-		var x = -5, y = 7, z = 4;
 		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
 		mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-		mat4.translate(mvMatrix, [-x, -y, -z]);
+		mat4.translate(mvMatrix, [-cameraX, -cameraY, -cameraZ]);
 		
 		for (var i = 0; i < drawList.length; i++){
 			var wall = drawList[i];
@@ -262,6 +271,7 @@
 
     function tick() {
         requestAnimFrame(tick);
+		handleMotion();
         drawScene();
         animate();
     }
@@ -275,9 +285,29 @@
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
+		
+		document.onkeydown = handleKeyDown;
+		document.onkeyup = handleKeyUp;
 
         tick();
     }
+	
+	var currentlyPressedKeys = {};
+	var motion = {};
+	function handleKeyDown(event){
+		currentlyPressedKeys[event.which] = true;
+		
+		if (event.which == 87) { // "W"
+			motion.forward = true;
+		}
+	}
+	
+	function handleKeyUp(event){
+		delete currentlyPressedKeys[event.which];
+		if (event.which == 87){ // "W"
+			motion.forward = false;
+		}
+	}
 
 </script>
 
