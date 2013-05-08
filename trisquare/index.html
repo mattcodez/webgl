@@ -255,7 +255,7 @@
 		for (var i = 0; i < drawList.length; i++){
 			var wall = drawList[i];
 			
-			mat4.translate(mvMatrix, wall.position);
+			mat4.translate(mvMatrix, wall.position); //Really shouldn't be translating wall positions at draw time
 			mvPushMatrix();
 
 			gl.bindBuffer(gl.ARRAY_BUFFER, wall.positionBuffer);
@@ -290,6 +290,24 @@
 		
 		document.onkeydown = handleKeyDown;
 		document.onkeyup = handleKeyUp;
+		
+		var requestPointerLock =	canvas.requestPointerLock ||
+									canvas.mozRequestPointerLock ||
+									canvas.webkitRequestPointerLock;
+		// Ask the browser to lock the pointer
+		if (requestPointerLock) {
+			canvas.addEventListener('click', requestPointerLock, false);
+			// Hook pointer lock state change events
+			document.addEventListener('pointerlockchange', changeCallback, false);
+			document.addEventListener('mozpointerlockchange', changeCallback, false);
+			document.addEventListener('webkitpointerlockchange', changeCallback, false);
+		}
+
+		// Ask the browser to release the pointer
+		var exitPointerLock =	document.exitPointerLock ||
+								document.mozExitPointerLock ||
+								document.webkitExitPointerLock;
+		//exitPointerLock();
 
         tick();
     }
