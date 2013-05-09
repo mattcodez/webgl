@@ -208,9 +208,6 @@
 		);
     }
 
-    var rTri = 0;
-    var rSquare = 0;
-
     var cameraX = -5;
 	var cameraY = 7;
 	var cameraZ = 4;
@@ -221,6 +218,9 @@
 	var forwardSpeed = 0.1;
 	var backwardSpeed = 0.1;
 	var crouchingDelta = 0;
+	
+	var cameraPanX = 0;
+	var cameraPanY = 0;
 	
 	function handleMotion(){
 		if (motion.forward){
@@ -268,8 +268,6 @@
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, wall.positionBuffer.numItems);
 			mvPopMatrix();
 		}
-
-	    //mat4.rotate(mvMatrix, degToRad(rTri), [0, 1, 0]);
     }
 
     function tick() {
@@ -278,8 +276,18 @@
         drawScene();
     }
 
-
     function webGLStart() {
+		function pointerLockChange(){
+			if (document.webkitPointerLockElement == canvas){
+				//We're toggling into pointer lock
+				document.addEventListener("mousemove", onMouseMove, false);
+			}
+			else {
+				//We're toggling out of pointer lock
+				document.removeEventListener("mousemove", onMouseMove, false);
+			}
+		}
+		
         var canvas = document.getElementById("lesson03-canvas");
         initGL(canvas);
         initShaders()
@@ -291,26 +299,22 @@
 		document.onkeydown = handleKeyDown;
 		document.onkeyup = handleKeyUp;
 		
-		var requestPointerLock =	canvas.requestPointerLock ||
-									canvas.mozRequestPointerLock ||
-									canvas.webkitRequestPointerLock;
-		// Ask the browser to lock the pointer
+		var requestPointerLock = canvas.webkitRequestPointerLock;
 		if (requestPointerLock) {
 			canvas.addEventListener('click', requestPointerLock, false);
-			// Hook pointer lock state change events
-			document.addEventListener('pointerlockchange', changeCallback, false);
-			document.addEventListener('mozpointerlockchange', changeCallback, false);
-			document.addEventListener('webkitpointerlockchange', changeCallback, false);
+			document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
 		}
 
-		// Ask the browser to release the pointer
-		var exitPointerLock =	document.exitPointerLock ||
-								document.mozExitPointerLock ||
-								document.webkitExitPointerLock;
+		var exitPointerLock = document.webkitExitPointerLock;
 		//exitPointerLock();
 
         tick();
     }
+	
+	function onMouseMove(e){
+		e.webkitMovementX
+		e.webkitMovementY
+	}
 	
 	var currentlyPressedKeys = {};
 	var motion = {};
