@@ -180,29 +180,29 @@
 			x[0] = -1.0 * halfWidth;
 			y[0] = -1.0 * halfHeight;
 			z[0] = -1.0 * base;
-			x[1] = -1.0 * halfWidth;
-			y[1] = halfHeight;
+			x[1] = halfWidth;
+			y[1] = -1.0 * halfHeight;
 			z[1] = -1.0 * base;
-			x[2] = halfWidth;
+			x[2] = -1.0 * halfWidth;
 			y[2] = halfHeight; 
 			z[2] = -1.0 * base;
 			x[3] = halfWidth;
-			y[3] = -1.0 * halfHeight;
+			y[3] = halfHeight;
 			z[3] = -1.0 * base;
 		}
 	  	
 		if(side == 't'){
 			// Top face
-			x[0] = -1.0 * halfWidth;
+			x[0] = halfWidth;
 			y[0] = base;
-			z[0] = -1.0 * halfHeight;
+			z[0] = halfHeight;
 			x[1] = -1.0 * halfWidth;
 			y[1] = base;
 			z[1] = halfHeight;
 			x[2] = halfWidth;
 			y[2] = base; 
-			z[2] = halfHeight;
-			x[3] = halfWidth;
+			z[2] = -1.0 * halfHeight;
+			x[3] = -1.0 * halfWidth;
 			y[3] = base;
 			z[3] = -1.0 * halfHeight;
 		}
@@ -215,10 +215,10 @@
 			x[1] = halfWidth;
 			y[1] = -1.0 * base;
 			z[1] = -1.0 * halfHeight;
-			x[2] = halfWidth;
+			x[2] = -1.0 * halfWidth;
 			y[2] = -1.0 * base; 
 			z[2] = halfHeight;
-			x[3] = -1.0 * halfWidth;
+			x[3] = halfWidth;
 			y[3] = -1.0 * base;
 			z[3] = halfHeight;
 		}
@@ -226,17 +226,17 @@
 		if(side == 'r'){
 			// Right face
 			x[0] = base;
-			y[0] = -1.0 * halfWidth;
-			z[0] = -1.0 * halfHeight;
+			y[0] = halfWidth;
+			z[0] = halfHeight;
 			x[1] = base;
-			y[1] = halfWidth;
-			z[1] = -1.0 * halfHeight;
+			y[1] = -1.0 * halfWidth;
+			z[1] = halfHeight;
 			x[2] = base;
 			y[2] = halfWidth; 
-			z[2] = halfHeight;
+			z[2] = -1.0 * halfHeight;
 			x[3] = base;
 			y[3] = -1.0 * halfWidth;
-			z[3] = halfHeight;
+			z[3] = -1.0 * halfHeight;
 		}
 		
 		if(side == 'l'){
@@ -245,19 +245,19 @@
 			y[0] = -1.0 * halfWidth;
 			z[0] = -1.0 * halfHeight;
 			x[1] = -1.0 * base;
-			y[1] = -1.0 * halfWidth;
-			z[1] = halfHeight;
+			y[1] = halfWidth;
+			z[1] = -1.0 * halfHeight;
 			x[2] = -1.0 * base;
-			y[2] = halfWidth; 
+			y[2] = -1.0 * halfWidth; 
 			z[2] = halfHeight;
 			x[3] = -1.0 * base;
 			y[3] = halfWidth;
-			z[3] = -1.0 * halfHeight;
+			z[3] = halfHeight;
 		}
 		
 		this.positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-		//alert('x[0]'+x[0]+', y[0]'+y[0]+', z[0]'+z[0]+', x[1]'+x[1]+', y[1]'+y[1]+', z[1]'+z[1]+', x[2]'+x[2]+', y[2]'+y[2]+', z[2]'+z[2]+', x[3]'+x[3]+', y[3]'+y[3]+', z[3]'+z[3]+'');
+		
         var vertices = [
              x[0], y[0], z[0],
              x[1], y[1], z[1],
@@ -287,7 +287,7 @@
 			width:5,
 			height:5,
 			side:'f',/*t=top,r=right,l=left,b=bottom,f=front,k=back*/
-			position:[0.0,0.0,-15.0],
+			position:[0.0,0.0,15.0],
 			color:[.5,.5,.5,1.0]}
 			,
 			drawList
@@ -296,8 +296,18 @@
 		createWall({
 			width:5,
 			height:5,
+			side:'k',/*t=top,r=right,l=left,b=bottom,f=front,k=back*/
+			position:[0.0,0.0,-15.0],
+			color:[.5,.5,.5,1.0]}
+			,
+			drawList
+		);
+		
+		createWall({
+			width:5,
+			height:15,
 			side:'r',/*t=top,r=right,l=left,b=bottom,f=front,k=back*/
-			position:[0.0,0.0,15.0],
+			position:[2.5,0.0,7.5],
 			color:[0.0,1.0,1.0,1.0]}
 			,
 			drawList
@@ -305,10 +315,20 @@
 		
 		createWall({
 			width:5,
-			height:5,
-			side:'t',/*t=top,r=right,l=left,b=bottom,f=front,k=back*/
-			position:[-10.0,0.0,10.0],
+			height:15,
+			side:'l',/*t=top,r=right,l=left,b=bottom,f=front,k=back*/
+			position:[-5,0.0,0],
 			color:[.5,0.5,0.4,1.0]}
+			,
+			drawList
+		);
+		
+		createWall({
+			width:5,
+			height:15,
+			side:'b',/*t=top,r=right,l=left,b=bottom,f=front,k=back*/
+			position:[2.5,-2.5,0],
+			color:[1.0,0.5,0.4,1.0]}
 			,
 			drawList
 		);
@@ -319,7 +339,7 @@
 
     var cameraX = -5;
 	var cameraY = 7;
-	var cameraZ = 4;
+	var cameraZ = 24;
 	
 	var pitch = -27;
 	var yaw = -20;
