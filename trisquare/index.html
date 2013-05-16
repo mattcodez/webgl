@@ -208,9 +208,9 @@
 		);
     }
 
-    var cameraX = -5;
-	var cameraY = 7;
-	var cameraZ = 4;
+    var cameraPos = [-5, 7, 4];
+	var cameraLook = [-5, 7, 5]; 
+	var cameraPan = [0,0,0]; //Z will always be zero
 	
 	var pitch = -27;
 	var yaw = -20;
@@ -219,11 +219,8 @@
 	var backwardSpeed = 0.1;
 	var crouchingDelta = 0;
 	
-	var cameraPanX = 0;
-	var cameraPanY = 0;
-	
 	function handleMotion(){
-		if (motion.forward){
+		/*if (motion.forward){
 			cameraX += (Math.cos(yaw) * forwardSpeed);
 			cameraZ += (Math.sin(yaw) * forwardSpeed);
 		}
@@ -231,7 +228,7 @@
 		if (motion.backward){
 			cameraX -= (Math.cos(yaw) * forwardSpeed);
 			cameraZ -= (Math.sin(yaw) * forwardSpeed);
-		}
+		}*/
 		
 		if (motion.crouching){
 			crouchingDelta = -3;
@@ -239,6 +236,21 @@
 		else {
 			crouchingDelta = 0;
 		}
+		
+		// Forward direction
+		var forwardDirection = vec3.create(cameraLook);
+		vec3.subtract(cameraLook, cameraPos, forwardDirection);
+		// Speed
+		//var forwardSpeed = dt * cameraSpeed;
+		// Forward or backward depending on keys held
+		var forwardScale = 0.0;
+		forwardScale += motion.forward ? 1.0 : 0.0;
+		forwardScale -= motion.backward ? 1.0 : 0.0;
+		// Scale movement
+		vec3.scale(forwardDirection, forwardScale * forwardSpeed);
+		// Add scaled movement to camera position
+		vec3.add(cameraPos, forwardDirection);
+		vec3.add(cameraLook, forwardDirection);
 	}
 	
 	function drawScene() {
@@ -250,7 +262,7 @@
         mat4.identity(mvMatrix);
 		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
 		mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-		mat4.translate(mvMatrix, [-cameraX, -(cameraY + crouchingDelta), -cameraZ]);
+		mat4.translate(mvMatrix, [-cameraPos[0], -(cameraPos[1] + crouchingDelta), -cameraPos[2]]);
 		
 		for (var i = 0; i < drawList.length; i++){
 			var wall = drawList[i];
@@ -312,8 +324,9 @@
     }
 	
 	function onMouseMove(e){
-		e.webkitMovementX
-		e.webkitMovementY
+		cameraPan[0] = e.webkitMovementX;
+		cameraPan[1] = e.webkitMovementY;
+		console.log(cameraPan);
 	}
 	
 	var currentlyPressedKeys = {};
