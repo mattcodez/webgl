@@ -250,6 +250,9 @@
 		
 		vec3.add(cameraPos, allMovement);
 		vec3.add(cameraLook, allMovement);
+		
+		yaw -= cameraPan[0] * 100;
+		pitch -= cameraPan[1] * 100;
 	}
 	
 	function drawScene() {
@@ -287,7 +290,7 @@
 		handleMotion();
         drawScene();
     }
-
+	
     function webGLStart() {
 		function pointerLockChange(){
 			if (document.webkitPointerLockElement == canvas){
@@ -300,7 +303,7 @@
 			}
 		}
 		
-        var canvas = document.getElementById("lesson03-canvas");
+        var canvas = document.getElementById("gameviewbox");
         initGL(canvas);
         initShaders()
         initBuffers();
@@ -324,9 +327,15 @@
     }
 	
 	function onMouseMove(e){
-		cameraPan[0] = e.webkitMovementX;
-		cameraPan[1] = e.webkitMovementY;
-		console.log(cameraPan);
+		//Movement event often gets stuck on a 1 or -1 so camera just keeps rotating, ignore for now
+		var moveX = e.webkitMovementX;
+		var moveY = e.webkitMovementY;
+		moveX = (Math.abs(moveX) == 1 ? 0 : moveX);
+		moveY = (Math.abs(moveY) == 1 ? 0 : moveY);
+		
+		//For now, cameraPan values represent the percentage of the viewport that has been transversed by input (i.e. mouse)
+		cameraPan[0] = moveX / gl.viewportWidth;
+		cameraPan[1] = moveY / gl.viewportHeight;
 	}
 	
 	var currentlyPressedKeys = {};
@@ -389,7 +398,7 @@
 
 
 <body onLoad="webGLStart();">
-    <canvas id="lesson03-canvas" style="border: none;" width="900" height="600"></canvas>
+    <canvas id="gameviewbox" style="border: none;" width="900" height="600"></canvas>
 </body>
 
 </html>
