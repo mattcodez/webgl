@@ -221,6 +221,13 @@
 	var crouchingDelta = 0;
 	
 	function handleMotion(){
+		/**	
+		Some of the math code taken from the HTML5 Rocks PointerLock tutorial
+		under the Apache 2.0 Licence
+		http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+		http://www.apache.org/licenses/LICENSE-2.0	
+		**/
+		
 		if (motion.crouching){
 			crouchingDelta = -3;
 		}
