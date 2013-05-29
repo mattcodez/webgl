@@ -233,7 +233,7 @@
 		crouchingDelta = motion.crouching ? -3 : 0;
 		
 		var forwardDirection = vec3.create(cameraLook);
-		vec3.subtract(cameraLook, cameraPos, forwardDirection);
+		vec3.subtract(forwardDirection, cameraLook, cameraPos);
 
 		var strafeScale = 0.0;
 		strafeScale += motion.strafeLeft ? 1.0 : 0.0;
@@ -260,9 +260,9 @@
 		forwardScale += motion.backward ? 1.0 : 0.0;
 		forwardScale -= motion.forward ? 1.0 : 0.0;
 		
-		vec3.scale(forwardDirection, forwardScale * movementSpeed);
+		vec3.scale(forwardDirection, forwardDirection, forwardScale * movementSpeed);
 		var allMovement = vec3.create();
-		vec3.add(strafeMovement, forwardDirection, allMovement);
+		vec3.add(allMovement, strafeMovement, forwardDirection);
 		
 		vec3.add(cameraPos, cameraPos, allMovement);
 		vec3.add(cameraLook, cameraLook, allMovement);
@@ -272,7 +272,7 @@
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+        mat4.perspective(pMatrix, degToRad(45), gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 		
         mat4.identity(mvMatrix);
 		mat4.rotateX(mvMatrix, mvMatrix, -pitch);
