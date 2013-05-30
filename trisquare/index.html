@@ -240,8 +240,8 @@
 		strafeScale -= motion.strafeRight ? 1.0 : 0.0;
 		var strafeMovement = vec3.create();
 		if (strafeScale !== 0.0){
-			vec3.cross(forwardDirection, cameraUp, strafeMovement);
-			vec3.scale(strafeMovement, strafeScale * movementSpeed);
+			vec3.cross(strafeMovement, forwardDirection, cameraUp);
+			vec3.scale(strafeMovement, strafeMovement, strafeScale * movementSpeed);
 		}
 		
 		//vec3.subtract(this.lookAtPoint, this.eyePoint, frontDirection);
