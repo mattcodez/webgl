@@ -1,5 +1,5 @@
 <h2>WebGL</h2>
-Things to do:
+<b>Things to do:</b>
 <ol>
   <li>Pointer Lock (Done)</li>
   <li>Modling Mesh Parser (Done)</li>
