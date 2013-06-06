@@ -99,8 +99,8 @@ objjs.loadOBJ = function loadOBJ(data){
 };
 
 //Get material names and paths
-objjs.loadMatl = loadMatl function(data){
-	var materialData = data.match(/^newmtl .*|^map_Kd .*/);
+objjs.loadMatl = function loadMatl(data){
+	var materialData = data.match(/^newmtl .*|^map_Kd .*/g);
 	var materials = [];
 	
 	for (var i = 0; i < materialData.length; i++){
