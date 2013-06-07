@@ -101,16 +101,15 @@ objjs.loadOBJ = function loadOBJ(data){
 //Get material names and paths
 objjs.loadMatl = function loadMatl(data){
 	var materialData = data.match(/^newmtl .*|^map_Kd .*/g);
-	var materials = [];
+	var materials = {};
 	
 	for (var i = 0; i < materialData.length; i++){
 		var line = materialData[i].split(' ');
 		if (line[0] == 'newmtl'){
-			materials.push({name: line[1]});
+			var lastName = line[1];
 		}
 		else { //assume map_Kd for our path
-			//add path property to last object in array
-			materials[materials.length - 1].path = line[1];
+			materials[lastName] = line[1];
 		}
 	}
 	
