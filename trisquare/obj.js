@@ -1,6 +1,10 @@
 "use strict";
 var objjs = {};
 objjs.loadOBJ = function loadOBJ(data){
+	var allTex = [];
+	var allTexCount = -1;
+	var allTexLength = [];
+	
 	var lines = data.split("\n");
 	var vertexCount1 = 0;
 	var vertexCount2 = 0;
@@ -46,12 +50,6 @@ objjs.loadOBJ = function loadOBJ(data){
 		if(vals[0] == 'f'){
 			for(var ii=1; ii<vals.length; ii++){
 				var val = vals[ii].split("/");
-				console.log(vertexCount1+vertexCount2
-					 +' - '+parseFloat(vX[(val[0]-1)])
-					 +' - '+parseFloat(vY[(val[0]-1)])
-					 +' - '+parseFloat(vZ[(val[0]-1)])
-					 +' - '+parseFloat(vtX[(val[1]-1)])
-					 +' - '+parseFloat(vtY[(val[1]-1)]));
 				if(allTex[allTexCount] == 'Metal_Brass_Ceiling'){
 					vertexPositions1.push(parseFloat(vX[(val[0]-1)]));
 					vertexPositions1.push(parseFloat(vY[(val[0]-1)]));
@@ -61,8 +59,6 @@ objjs.loadOBJ = function loadOBJ(data){
 					vertexTextureCoords1.push(parseFloat(vtY[(val[1]-1)]));
 					
 					vertexCount1 += 1;
-
-					vertexTextureCount1++;
 				}
 				if(allTex[allTexCount] == 'Metal_Steel_Textured_White'){
 					vertexPositions2.push(parseFloat(vX[(val[0]-1)]));
@@ -73,8 +69,6 @@ objjs.loadOBJ = function loadOBJ(data){
 					vertexTextureCoords2.push(parseFloat(vtY[(val[1]-1)]));
 					
 					vertexCount2 += 1;
-					
-					vertexTextureCount2++;
 				}
 				
 				allTexLength[(allTexLength.length-1)]++;
@@ -91,7 +85,7 @@ objjs.loadOBJ = function loadOBJ(data){
 		},
 		{
 			verticies: 		vertexPositions2,
-			vertexCount:	vertextCount2,
+			vertexCount:	vertexCount2,
 			textureCoords: 	vertexTextureCoords2,
 			texture:		'Metal_Steel_Textured_White'
 		}
@@ -100,7 +94,7 @@ objjs.loadOBJ = function loadOBJ(data){
 
 //Get material names and paths
 objjs.loadMatl = function loadMatl(data){
-	var materialData = data.match(/^newmtl .*|^map_Kd .*/g);
+	var materialData = data.match(/newmtl .*|map_Kd .*/g);
 	var materials = {};
 	
 	for (var i = 0; i < materialData.length; i++){

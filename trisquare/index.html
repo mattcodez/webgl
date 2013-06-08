@@ -143,28 +143,38 @@
     }
 
 	var drawList = [];
-    function initBuffers() {
+    function initBuffers(map) {
 		var worldObjects = objjs.loadOBJ(map);
+		
 		for (var i = 0; i < worldObjects.length; i++){
 			var object = worldObjects[i];
 			
 			var vertexPositionBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.vertices), gl.STATIC_DRAW);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.verticies), gl.STATIC_DRAW);
 			vertexPositionBuffer.itemSize = 3;
 			vertexPositionBuffer.numItems = object.vertexCount;
 
-			vertexTextureCoordBuffer = gl.createBuffer();
+			var vertexTextureCoordBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
 			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.textureCoords), gl.STATIC_DRAW);
 			vertexTextureCoordBuffer.itemSize = 2;
 			vertexTextureCoordBuffer.numItems = object.vertexCount;
+			
+			var drawItem = {
+				vertexPositionBuffer: 		vertexPositionBuffer,
+				vertexTextureCoordBuffer: 	vertexTextureCoordBuffer,
+				texture:					object.texture
+			};
+			
+			drawList.push(drawItem);
 		}
     }
 	
 	var textures = {};
-	function initTextures(){
+	function initTextures(data){
 		var texturePaths = objjs.loadMatl(data);
+		
 		for (var textureName in texturePaths){
 			var path = texturePaths[textureName];
 			
@@ -274,20 +284,24 @@
 		mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1] + crouchingDelta), -cameraPos[2]]);
 		
 		for (var i = 0; i < drawList.length; i++){
-			var wall = drawList[i];
+			var worldObject = drawList[i];
 			
-			mat4.translate(mvMatrix, mvMatrix, wall.position); //Really shouldn't be translating wall positions at draw time
-			mvPushMatrix();
-
-			gl.bindBuffer(gl.ARRAY_BUFFER, wall.positionBuffer);
-			gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, wall.positionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-			gl.bindBuffer(gl.ARRAY_BUFFER, wall.colorBuffer);
-			gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, wall.colorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
+			if (worldObject.texture){
+				gl.bindBuffer(gl.ARRAY_BUFFER, worldObject.vertexTextureCoordBuffer);
+				gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, worldObject.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			}
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, worldObject.vertexPositionBuffer);
+			gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldObject.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			
+			if (worldObject.texture){
+				gl.activeTexture(gl.TEXTURE0);
+				gl.bindTexture(gl.TEXTURE_2D, textures[worldObject.texture].glTexture); 
+				gl.uniform1i(shaderProgram.samplerUniform, 0);
+			}
+				
 			setMatrixUniforms();
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, wall.positionBuffer.numItems);
-			mvPopMatrix();
+			gl.drawArrays(gl.TRIANGLES, 0, worldObject.vertexPositionBuffer.numItems);
 		}
     }
 
@@ -312,7 +326,8 @@
         var canvas = document.getElementById("gameviewbox");
         initGL(canvas);
         initShaders()
-        initBuffers();
+        loadObject('glMap.obj', initBuffers);
+		loadObject('glMap.mtl', initTextures);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
@@ -331,6 +346,17 @@
 
         tick();
     }
+	
+	function loadObject(path, callback) {
+		var request = new XMLHttpRequest();
+		request.open("GET", path);
+		request.onreadystatechange = function () {
+			if (request.readyState == 4) {
+				callback(request.responseText);
+			}
+		}
+		request.send();
+	}
 	
 	function onMouseMove(e){
 		//Movement event often gets stuck on a 1 or -1 so camera just keeps rotating, ignore for now
