@@ -289,52 +289,36 @@
 					if(vals[0] == 'f'){
 						for(var ii=1; ii<vals.length; ii++){
 							var val = vals[ii].split("/");
-							alert(vertexPositions.length);
+							//alert(vertexPositions.length);
 							if(allTex[allTexCount] == 'Metal_Brass_Ceiling'){
-								//alert(vertexPositions.length);
-								if(vertexPositions.length == 0){
-									vertexPositions[0] = [parseFloat(vX[(val[0]-1)]), parseFloat(vY[(val[0]-1)]), parseFloat(vZ[(val[0]-1)])];
-									
-									vertexTextureCoords[0] = [parseFloat(vtX[(val[1]-1)]), parseFloat(vtY[(val[1]-1)])];
-								}else{
-									vertexPositions[0].push(parseFloat(vX[(val[0]-1)]));
-									vertexPositions[0].push(parseFloat(vY[(val[0]-1)]));
-									vertexPositions[0].push(parseFloat(vZ[(val[0]-1)]));
-								
-									vertexTextureCoords[0].push(parseFloat(vtX[(val[1]-1)]));
-			                		vertexTextureCoords[0].push(parseFloat(vtY[(val[1]-1)]));
+								if(typeof vertexPositions[0] == "undefined"){
+									vertexPositions[0] = [];
+									vertexTextureCoords[0] = [];
+									vertexCount[0] = 0;
 								}
-								/*
 								vertexPositions[0].push(parseFloat(vX[(val[0]-1)]));
 								vertexPositions[0].push(parseFloat(vY[(val[0]-1)]));
 								vertexPositions[0].push(parseFloat(vZ[(val[0]-1)]));
 							
 								vertexTextureCoords[0].push(parseFloat(vtX[(val[1]-1)]));
 		                		vertexTextureCoords[0].push(parseFloat(vtY[(val[1]-1)]));
-								*/
+								
 								vertexCount[0] += 1;
 							}
+							
 							if(allTex[allTexCount] == 'Metal_Steel_Textured_White'){
-								if(vertexPositions.length == 0){
-									vertexPositions[1] = [parseFloat(vX[(val[0]-1)]), parseFloat(vY[(val[0]-1)]), parseFloat(vZ[(val[0]-1)])];
-									
-									vertexTextureCoords[1] = [parseFloat(vtX[(val[1]-1)]), parseFloat(vtY[(val[1]-1)])];
-								}else{
-									vertexPositions[1].push(parseFloat(vX[(val[0]-1)]));
-									vertexPositions[1].push(parseFloat(vY[(val[0]-1)]));
-									vertexPositions[1].push(parseFloat(vZ[(val[0]-1)]));
-								
-									vertexTextureCoords[1].push(parseFloat(vtX[(val[1]-1)]));
-			                		vertexTextureCoords[1].push(parseFloat(vtY[(val[1]-1)]));
+								if(typeof vertexPositions[1] == "undefined"){
+									vertexPositions[1] = [];
+									vertexTextureCoords[1] = [];
+									vertexCount[1] = 0;
 								}
-								/*
 								vertexPositions[1].push(parseFloat(vX[(val[0]-1)]));
 								vertexPositions[1].push(parseFloat(vY[(val[0]-1)]));
 								vertexPositions[1].push(parseFloat(vZ[(val[0]-1)]));
-								
+							
 								vertexTextureCoords[1].push(parseFloat(vtX[(val[1]-1)]));
 		                		vertexTextureCoords[1].push(parseFloat(vtY[(val[1]-1)]));
-								*/
+							
 								vertexCount[1] += 1;
 							}
 							
@@ -342,6 +326,8 @@
 						}
 					}
 				}
+				
+				alert(vertexPositions[0].length+' - '+vertexCount[0]);
 		        
 		        objVertexPositionBuffer[0] = gl.createBuffer();
 		        gl.bindBuffer(gl.ARRAY_BUFFER, objVertexPositionBuffer[0]);
