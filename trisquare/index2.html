@@ -132,8 +132,63 @@
 		
 			var texture1;
 			var texture2;
+			
+			var texture = new Array();
 		
-		    function initTexture() {
+		    function initTexture(fileName) {
+		    	var request = new XMLHttpRequest();
+		        request.open("GET", "glMap.mtl");
+		        request.onreadystatechange = function () {
+		            if (request.readyState == 4) {
+		                var lines = request.responseText.split("\n");
+		                
+		                for(var i=0; i<lines.length; i++){
+			                var vals = lines[i].split(" ");
+			                
+			                if(vals[0] == "map_Kd"){
+			                	var ind = ((texture.length-1) == -1 ? 0 : (texture.length));
+			                	texture[ind] = gl.createTexture();
+						    	texture[ind].image = new Image();
+						    	texture[ind].image.onload = function(){
+							    	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+							        gl.bindTexture(gl.TEXTURE_2D, texture[ind]);
+							        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture[ind].image);
+							        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+							        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAR);
+									//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAR);
+
+						    	}
+						    	texture[ind].image.src = vals[1];
+						    	//alert(ind);
+						    	/*if((texture.length-1) == 0){
+							    	texture1 = gl.createTexture();
+							    	texture1.image = new Image();
+							    	texture1.image.onload = function(){
+								    	handleLoadedTexture(texture1)
+							    	}
+							    	texture1.image.src = vals[1];
+						    	}else if((texture.length-1) == 1){
+							    	texture2 = gl.createTexture();
+							    	texture2.image = new Image();
+							    	texture2.image.onload = function(){
+								    	handleLoadedTexture(texture2)
+							    	}
+							    	texture2.image.src = vals[1];
+						    	}*/
+			                }
+		                }
+		            }
+		        }
+		        request.send();
+		    	
+		    	/*
 		        texture1 = gl.createTexture();
 		        texture1.image = new Image();
 		        texture1.image.onload = function () {
@@ -147,8 +202,10 @@
 		            handleLoadedTexture(texture2)
 		        }
 		        texture2.image.src = "glMap/Metal_Steel_Textured_White.jpg";
+		        */
 		    }
-		
+			
+
 		    var mvMatrix = mat4.create();
 		    var mvMatrixStack = [];
 		    var pMatrix = mat4.create();
@@ -242,7 +299,7 @@
 			var allTexCount = -1;
 			var allTexLength = [];
 		
-		    function handleLoadedWorld(data) {
+		    function handleLoadedObject(data) {
 		        var lines = data.split("\n");
 		        var vertexCount1 = 0;
 				var vertexCount2 = 0;
@@ -352,12 +409,12 @@
 		    }
 		
 		
-		    function loadWorld() {
+		    function loadObject() {
 		        var request = new XMLHttpRequest();
 		        request.open("GET", "glMap.obj");
 		        request.onreadystatechange = function () {
 		            if (request.readyState == 4) {
-		                handleLoadedWorld(request.responseText);
+		                handleLoadedObject(request.responseText);
 		            }
 		        }
 		        request.send();
@@ -384,9 +441,9 @@
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, worldVertexPositionBuffer1);
 				gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldVertexPositionBuffer1.itemSize, gl.FLOAT, false, 0, 0);
-				
+				//alert(texture[1].image.src)
 				gl.activeTexture(gl.TEXTURE0);
-				gl.bindTexture(gl.TEXTURE_2D, texture1); 
+				gl.bindTexture(gl.TEXTURE_2D, texture[0]); 
 				gl.uniform1i(shaderProgram.samplerUniform, 0);
 				
 				setMatrixUniforms();	
@@ -400,7 +457,7 @@
 				gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldVertexPositionBuffer2.itemSize, gl.FLOAT, false, 0, 0);
 				
 				gl.activeTexture(gl.TEXTURE0);
-				gl.bindTexture(gl.TEXTURE_2D, texture2); 
+				gl.bindTexture(gl.TEXTURE_2D, texture[1]); 
 				gl.uniform1i(shaderProgram.samplerUniform, 0);
 				
 				setMatrixUniforms();	
@@ -461,7 +518,7 @@
 		        initGL(canvas);
 		        initShaders();
 		        initTexture();
-		        loadWorld();
+		        loadObject();
 		
 		        gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		        gl.enable(gl.DEPTH_TEST);
