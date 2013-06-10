@@ -1,0 +1,3 @@
+[submodule "trisquare/OBJ_WebGL"]
+	path = trisquare/OBJ_WebGL
+	url = git://github.com/MattMcAlear/OBJ_WebGL.git
