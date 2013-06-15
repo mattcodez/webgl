@@ -1,7 +1,7 @@
 "use strict";
 var objjs = {};
 
-objjs.loadTexture = function loadTexture(filePath,texture, gl)  {
+objjs.loadTexture = function loadTexture(filePath, texture, gl)  {
 	var i = texture.length;
 	texture[i] = gl.createTexture();
 	texture[i].image = new Image();
@@ -53,7 +53,7 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 	for(var i=0; i<lines.length; i++){
 		var vals = lines[i].split(" ");
 		
-		if(vals[0] == 'usemtl' && vals[1] != 'FrontColor'){
+		if(vals[0] == 'usemtl' && vals[1] != 'FrontColor' && vals[1] != 'ForegroundColor'){
 			allTex.push(vals[1]);
 			
 			if(uniqueTextures.length == 0){ 
@@ -88,7 +88,7 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 	
 	for(var i=0; i<lines.length; i++){
 		var vals = lines[i].split(" ");
-		if(vals[0] == 'usemtl' && vals[1] != 'FrontColor'){
+		if(vals[0] == 'usemtl' && vals[1] != 'FrontColor' && vals[1] != 'ForegroundColor'){
 			allTexCount++;
 			allTexLength.push(0);
 		}

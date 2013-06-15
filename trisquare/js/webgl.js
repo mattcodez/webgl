@@ -234,8 +234,8 @@ function webGLStart() {
     objjs.initTexture('glMap', gl);
     objjs.loadObject('glMap');
     //Load Dodge Ball
-    objjs.initTexture('dodgeBall', gl);
-    objjs.loadObject('dodgeBall');
+    //objjs.initTexture('dodgeBall', gl);
+    //objjs.loadObject('dodgeBall');
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
