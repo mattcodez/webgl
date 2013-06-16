@@ -17,6 +17,9 @@ var yawRate = 0;
 var xPos = 0;
 var yPos = 0.4;
 var zPos = 0;
+var xPosBall = 0;
+var yPosBall = 0.4;
+var zPosBall = 0;
 var speed = 0;
 
 var objVertexPositionBuffer = [];
@@ -174,16 +177,21 @@ function drawScene() {
         return;
     }
 
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-
-    mat4.identity(mvMatrix);
-
-    mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
-    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-    mat4.translate(mvMatrix, [-xPos, -yPos, -zPos]);
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);    
 	
 	//Set all buffers and invoke all draws
 	for(var i=0; i<uniqueTextures.length; i++){
+		mat4.identity(mvMatrix);
+		
+		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
+	    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
+	    if(i==2){
+		    mat4.translate(mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
+	    }else{
+		    mat4.translate(mvMatrix, [-xPos, -yPos, -zPos]);
+	    }
+	    
+	    
         gl.bindBuffer(gl.ARRAY_BUFFER, objVertexTextureCoordBuffer[i]);
 		gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, objVertexTextureCoordBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
 		
@@ -207,9 +215,13 @@ function animate() {
         if (speed != 0) {
             xPos -= Math.sin(degToRad(yaw)) * speed * elapsed;
             zPos -= Math.cos(degToRad(yaw)) * speed * elapsed;
+            
+            xPosBall -= Math.sin(degToRad(yaw)) * speed * elapsed;
+            zPosBall -= Math.cos(degToRad(yaw)) * speed * elapsed;
 
             joggingAngle += elapsed * 0.6; // 0.6 "fiddle factor" - makes it feel more realistic :-)
-            yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4
+            yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4;
+            yPosBall = Math.sin(degToRad(joggingAngle)) / 20 + 0.4;
         }
 
         yaw += yawRate * elapsed;
@@ -220,6 +232,8 @@ function animate() {
 }
 
 function tick() {
+	xPosBall -= .001;
+    zPosBall -= 0;
     requestAnimFrame(tick);
     handleKeys();
     drawScene();
