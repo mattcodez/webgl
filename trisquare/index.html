@@ -3,8 +3,8 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-<script type="text/javascript" src="glMatrix-2.2.0.js"></script>
-<script type="text/javascript" src="webgl-utils.js"></script>
+<script type="text/javascript" src="js/glMatrix-2.2.0.js"></script>
+<script type="text/javascript" src="js/webgl-utils.js"></script>
 <script type="text/javascript" src="OBJ_WebGL/js/obj.js"></script>
 
 <script id="shader-fs" type="x-shader/x-fragment">
@@ -146,8 +146,8 @@
     }
 
 	var drawList = [];
-    function initBuffers(map) {
-		var worldObjects = objjs.loadOBJ(map);
+    function initBuffers(mapname) {
+		var worldObjects = objjs.loadObject(mapname);
 		
 		for (var i = 0; i < worldObjects.length; i++){
 			var object = worldObjects[i];
@@ -317,8 +317,9 @@
         var canvas = document.getElementById("gameviewbox");
         initGL(canvas);
         initShaders()
-        loadObject('glMap.obj', initBuffers);
-		loadObject('glMap.mtl', initTextures);
+        //loadObject('glMap.obj', initBuffers);
+		initBuffers('glMap');
+		//loadObject('glMap.mtl', initTextures);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
