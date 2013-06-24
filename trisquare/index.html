@@ -318,7 +318,10 @@
         initGL(canvas);
         initShaders()
         //loadObject('glMap.obj', initBuffers);
-		initBuffers('glMap');
+		//initBuffers('glMap');
+		loadObject('glMap.obj', function(mapdata){
+			objjs.handleLoadedObject(mapdata, gl);
+		});
 		//loadObject('glMap.mtl', initTextures);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
