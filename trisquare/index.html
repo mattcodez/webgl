@@ -173,33 +173,6 @@
 			drawList.push(drawItem);
 		}
     }
-	
-	var textures = {};
-	function initTextures(data){
-		var texturePaths = objjs.loadMatl(data);
-		
-		for (var textureName in texturePaths){
-			var path = texturePaths[textureName];
-			
-			var glTexture = gl.createTexture();
-			glTexture.image = new Image();
-			glTexture.image.onload = function () {
-				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-				gl.bindTexture(gl.TEXTURE_2D, glTexture);
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, glTexture.image);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				
-				gl.bindTexture(gl.TEXTURE_2D, null);
-			}
-			glTexture.image.src = path;
-			
-			textures[textureName] = {
-				path:		path,
-				glTexture:	glTexture
-			};
-		}
-	}
 
     var cameraPos = [-5, 7, 4];
 	var cameraLook = [-5, 7, 5]; 
@@ -277,7 +250,7 @@
 		for (var i = 0; i < drawList.length; i++){
 			var worldObject = drawList[i];
 			
-			if (worldObject.texture){
+			if (worldObject.textureName){
 				gl.bindBuffer(gl.ARRAY_BUFFER, worldObject.vertexTextureCoordBuffer);
 				gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, worldObject.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 			}
@@ -285,9 +258,9 @@
 			gl.bindBuffer(gl.ARRAY_BUFFER, worldObject.vertexPositionBuffer);
 			gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldObject.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 			
-			if (worldObject.texture){
+			if (worldObject.textureName){
 				gl.activeTexture(gl.TEXTURE0);
-				gl.bindTexture(gl.TEXTURE_2D, textures[worldObject.texture].glTexture); 
+				gl.bindTexture(gl.TEXTURE_2D, textures[worldObject.textureName].glTexture); 
 				gl.uniform1i(shaderProgram.samplerUniform, 0);
 			}
 				
@@ -302,7 +275,8 @@
         drawScene();
     }
 	
-    function webGLStart() {
+    var textures;
+	function webGLStart() {
 		function pointerLockChange(){
 			if (document.webkitPointerLockElement == canvas){
 				//We're toggling into pointer lock
@@ -320,7 +294,11 @@
         //loadObject('glMap.obj', initBuffers);
 		//initBuffers('glMap');
 		loadObject('glMap.obj', function(mapdata){
-			objjs.handleLoadedObject(mapdata, gl);
+			drawList = objjs.handleLoadedObject(mapdata, gl);
+		});
+		loadObject('glMap.mtl', function(textureData){
+			textures = objjs.initTexture(textureData,gl);
+			tick(); //Don't start the game until everything is loaded
 		});
 		//loadObject('glMap.mtl', initTextures);
 
@@ -338,8 +316,6 @@
 
 		var exitPointerLock = document.webkitExitPointerLock;
 		//exitPointerLock();
-
-        tick();
     }
 	
 	function loadObject(path, callback) {
