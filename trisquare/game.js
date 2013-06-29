@@ -135,15 +135,6 @@ function handleMotion(){
 	var forwardDirection = vec3.create(cameraLook);
 	vec3.subtract(forwardDirection, cameraLook, cameraPos);
 
-	var strafeScale = 0.0;
-	strafeScale += motion.strafeLeft ? 1.0 : 0.0;
-	strafeScale -= motion.strafeRight ? 1.0 : 0.0;
-	var strafeMovement = vec3.create();
-	if (strafeScale !== 0.0){
-		vec3.cross(strafeMovement, forwardDirection, cameraUp);
-		vec3.scale(strafeMovement, strafeMovement, strafeScale * movementSpeed);
-	}
-	
 	//vec3.subtract(this.lookAtPoint, this.eyePoint, frontDirection);
 	vec3.normalize(forwardDirection, forwardDirection);
 	var q = quat.create();
@@ -155,6 +146,15 @@ function handleMotion(){
 	// Update camera look vector
 	//this.lookAtPoint = vec3.create(this.eyePoint);
 	//vec3.add(this.lookAtPoint, frontDirection);
+	
+	var strafeScale = 0.0;
+	strafeScale += motion.strafeLeft ? 1.0 : 0.0;
+	strafeScale -= motion.strafeRight ? 1.0 : 0.0;
+	var strafeMovement = vec3.create();
+	if (strafeScale !== 0.0){
+		vec3.cross(strafeMovement, forwardDirection, cameraUp);
+		vec3.scale(strafeMovement, strafeMovement, strafeScale * movementSpeed);
+	}
 	
 	var forwardScale = 0.0;
 	forwardScale += motion.backward ? 1.0 : 0.0;
@@ -224,17 +224,18 @@ function webGLStart(){
 	
 	var canvas = document.getElementById("gameviewbox");
 	initGL(canvas);
-	initShaders()
-	//loadObject('glMap.obj', initBuffers);
-	//initBuffers('glMap');
+	initShaders();
+	
+	//Load map data
 	loadObject('glMap.obj', function(mapdata){
 		drawList = objjs.handleLoadedObject(mapdata, gl);
 	});
+	
+	//Load map texture data
 	loadObject('glMap.mtl', function(textureData){
 		textures = objjs.initTexture(textureData,gl);
 		tick(); //Don't start the game until everything is loaded
 	});
-	//loadObject('glMap.mtl', initTextures);
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.enable(gl.DEPTH_TEST);
