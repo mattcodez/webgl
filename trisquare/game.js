@@ -179,6 +179,7 @@ function drawScene() {
 	mat4.rotateY(mvMatrix, mvMatrix, -yaw);
 	//TODO: Move crouchingDelta to handleMotion()
 	mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1] + crouchingDelta), -cameraPos[2]]);
+	setMatrixUniforms();
 	
 	for (var i = 0; i < drawList.length; i++){
 		var worldObject = drawList[i];
@@ -186,18 +187,14 @@ function drawScene() {
 		if (worldObject.textureName){
 			gl.bindBuffer(gl.ARRAY_BUFFER, worldObject.vertexTextureCoordBuffer);
 			gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, worldObject.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, textures[worldObject.textureName].glTexture); 
+			gl.uniform1i(shaderProgram.samplerUniform, 0);
 		}
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, worldObject.vertexPositionBuffer);
 		gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldObject.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 		
-		if (worldObject.textureName){
-			gl.activeTexture(gl.TEXTURE0);
-			gl.bindTexture(gl.TEXTURE_2D, textures[worldObject.textureName].glTexture); 
-			gl.uniform1i(shaderProgram.samplerUniform, 0);
-		}
-			
-		setMatrixUniforms();
 		gl.drawArrays(gl.TRIANGLES, 0, worldObject.vertexPositionBuffer.numItems);
 	}
 }
@@ -229,12 +226,14 @@ function webGLStart(){
 	//Load map data
 	loadObject('glMap.obj', function(mapdata){
 		drawList = objjs.handleLoadedObject(mapdata, gl);
-	});
 	
-	//Load map texture data
-	loadObject('glMap.mtl', function(textureData){
-		textures = objjs.initTexture(textureData,gl);
-		tick(); //Don't start the game until everything is loaded
+		//Load map texture data
+		loadObject('glMap.mtl', function(textureData){
+			objjs.initTexture(textureData,gl,function(maptextures){
+				textures = maptextures;
+				tick(); //Don't start the game until everything is loaded
+			});
+		});
 	});
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
