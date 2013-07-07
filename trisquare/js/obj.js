@@ -39,9 +39,6 @@ objjs.initTexture = function initTexture(fileName, gl) {
 objjs.handleLoadedObject = function handleLoadedObject(data) {
     var lines = data.split("\n");
     
-    var vertexCount = [];
-    var vertexPositions = [];
-    var vertexTextureCoords = [];
 	var vX = [];
 	var vY = [];
 	var vZ = [];
@@ -53,21 +50,68 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 	for(var i=0; i<lines.length; i++){
 		var vals = lines[i].split(" ");
 		
+		if(vals[0] == 'g'){
+			var isObj=false;
+			for(var ii=0; ii<objects.length; ii++){
+				if(vals[2] == objects[ii].name){
+					isObj=true;
+				}
+			}
+			if(!isObj){
+				if(vals[2].substr(0, 8).toLowerCase() == 'dodgeball'){
+					var objType=1;
+				}else if(vals[2].substr(0, 2).toLowerCase() == 'map'){
+					var objType=0;
+				}else if(vals[2].substr(0, 5).toLowerCase() == 'player'){
+					var objType=1;
+				}
+				
+				objects.push(
+					{
+						name:							vals[2], //ect: ball, map, player
+						type: 							objType, 	//0=fixed, 1=moves
+						minX:							null, 	//For collision detection
+						maxX:							null,	//For collision detection
+						minY:							null,	//For collision detection
+						maxY:							null,	//For collision detection
+						minZ:							null,	//For collision detection
+						maxZ:							null,	//For collision detection
+						xPos:							0,	
+						yPos:							0,
+						zPos:							0,
+						pitch:							0,
+						pitchRate:						0,
+						yaw:							0,
+						yawRate:						0,
+						speed:							0,
+						lives:							0, 	//For player
+						score:							0, 	//For player
+						timeInAir:						0, 	//For Physics
+						vertexPositions:				[],		
+						vertexTextureCoords:			[],
+						vertexCount:					[],
+						objVertexPositionBuffer:		[],
+						objVertexTextureCoordBuffer:	[],
+						textures: 						[],
+						objTexture:						[]
+					}
+				);
+			}
+		}
 		if(vals[0] == 'usemtl' && vals[1] != 'FrontColor' && vals[1] != 'ForegroundColor'){
 			allTex.push(vals[1]);
 			
-			if(uniqueTextures.length == 0){ 
-				uniqueTextures.push(vals[1]); 
+			if(objects[objects.length-1].textures.length == 0){ 
+				objects[objects.length-1].textures.push(vals[1]);
 			}else{
 				var isUnique = true;
-				for(var a=0; a<uniqueTextures.length; a++){
-					//alert(vals[1]+' - '+allTex[a]);
-					if(vals[1] == uniqueTextures[a]){
+				for(var a=0; a<objects[objects.length-1].textures.length; a++){
+					if(vals[1] == objects[objects.length-1].textures[a]){
 						isUnique = false;
 					}
 				}
 				if(isUnique == true){
-					uniqueTextures.push(vals[1]);
+					objects[objects.length-1].textures.push(vals[1]);
 				}
 			}
 		}
@@ -96,21 +140,80 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 			for(var ii=1; ii<vals.length; ii++){
 				var val = vals[ii].split("/");
 				
-				for(var iii=0; iii<uniqueTextures.length; iii++){
-					if(allTex[allTexCount] == uniqueTextures[iii]){
-						if(typeof vertexPositions[iii] == "undefined"){
-							vertexPositions[iii] = [];
-							vertexTextureCoords[iii] = [];
-							vertexCount[iii] = 0;
-						}
-						vertexPositions[iii].push(parseFloat(vX[(val[0]-1)]));
-						vertexPositions[iii].push(parseFloat(vY[(val[0]-1)]));
-						vertexPositions[iii].push(parseFloat(vZ[(val[0]-1)]));
-					
-						vertexTextureCoords[iii].push(parseFloat(vtX[(val[1]-1)]));
-                		vertexTextureCoords[iii].push(parseFloat(vtY[(val[1]-1)]));
+				for(var iii=1; iii<objects.length; iii++){
+					for(var a=0; a<objects[iii].textures.length; a++){
+						if(allTex[allTexCount] == objects[iii].textures[a]){
+							if(typeof objects[iii].vertexPositions[a] == "undefined"){
+								objects[iii].vertexPositions[a] = [];
+								objects[iii].vertexTextureCoords[a] = [];
+								objects[iii].vertexCount[a] = 0;
+							}
+							objects[iii].vertexPositions[a].push(parseFloat(vX[(val[0]-1)]));
+							objects[iii].vertexPositions[a].push(parseFloat(vY[(val[0]-1)]));
+							objects[iii].vertexPositions[a].push(parseFloat(vZ[(val[0]-1)]));
 						
-						vertexCount[iii] += 1;
+							objects[iii].vertexTextureCoords[a].push(parseFloat(vtX[(val[1]-1)]));
+	                		objects[iii].vertexTextureCoords[a].push(parseFloat(vtY[(val[1]-1)]));
+							
+							objects[iii].vertexCount[a] += 1;
+							
+							//set min and max levels 
+							{
+							//minX
+							if(objects[iii].minX == null){
+								objects[iii].minX = vX[(val[0]-1)];
+							}else if(objects[iii].minX > vX[(val[0]-1)]){
+								objects[iii].minX = vX[(val[0]-1)];
+							}else{
+								//nothing
+							}
+							
+							//maxX
+							if(objects[iii].maxX == null){
+								objects[iii].maxX = vX[(val[0]-1)];
+							}else if(objects[iii].maxX < vX[(val[0]-1)]){
+								objects[iii].maxX = vX[(val[0]-1)];
+							}else{
+								//nothing
+							}
+							
+							//minY
+							if(objects[iii].minY == null){
+								objects[iii].minY = vY[(val[0]-1)];
+							}else if(objects[iii].minY > vY[(val[0]-1)]){
+								objects[iii].minY = vY[(val[0]-1)];
+							}else{
+								//nothing
+							}
+							
+							//maxY
+							if(objects[iii].maxY == null){
+								objects[iii].maxY = vY[(val[0]-1)];
+							}else if(objects[iii].maxY < vY[(val[0]-1)]){
+								objects[iii].maxY = vY[(val[0]-1)];
+							}else{
+								//nothing
+							}
+							
+							//minZ
+							if(objects[iii].minZ == null){
+								objects[iii].minZ = vZ[(val[0]-1)];
+							}else if(objects[iii].minZ > vZ[(val[0]-1)]){
+								objects[iii].minZ = vZ[(val[0]-1)];
+							}else{
+								//nothing
+							}
+							
+							//maxZ
+							if(objects[iii].maxZ == null){
+								objects[iii].maxZ = vZ[(val[0]-1)];
+							}else if(objects[iii].maxZ < vZ[(val[0]-1)]){
+								objects[iii].maxZ = vZ[(val[0]-1)];
+							}else{
+								//nothing
+							}
+							}
+						}
 					}
 				}
 				
@@ -118,42 +221,24 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 			}
 		}
 	}
-	
-	//Create all buffers
-	for(var i=0; i<uniqueTextures.length; i++){
-        objVertexPositionBuffer[i] = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, objVertexPositionBuffer[i]);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositions[i]), gl.STATIC_DRAW);
-        objVertexPositionBuffer[i].itemSize = 3;
-        objVertexPositionBuffer[i].numItems = vertexCount[i];
 
-        objVertexTextureCoordBuffer[i] = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, objVertexTextureCoordBuffer[i]);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexTextureCoords[i]), gl.STATIC_DRAW);
-        objVertexTextureCoordBuffer[i].itemSize = 2;
-        objVertexTextureCoordBuffer[i].numItems = vertexCount[i];
+	for(var i=1; i<objects.length; i++){
+		for(var ii=0; ii<objects[i].textures.length; ii++){			
+	        objects[i].objVertexPositionBuffer[ii] = gl.createBuffer();
+	        gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexPositionBuffer[ii]);
+	        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(objects[i].vertexPositions[ii]), gl.STATIC_DRAW);
+	        objects[i].objVertexPositionBuffer[ii].itemSize = 3;
+	        objects[i].objVertexPositionBuffer[ii].numItems = objects[i].vertexCount[ii];
+	
+	        objects[i].objVertexTextureCoordBuffer[ii] = gl.createBuffer();
+	        gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexTextureCoordBuffer[ii]);
+	        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(objects[i].vertexTextureCoords[ii]), gl.STATIC_DRAW);
+	        objects[i].objVertexTextureCoordBuffer[ii].itemSize = 2;
+	        objects[i].objVertexTextureCoordBuffer[ii].numItems = objects[i].vertexCount[ii];			
+	    }
 	}
 	
-	var result = [
-		{
-			verticies:		vertexPositions[0],
-			vertexCount:	vertexCount[0],
-			textureCoords:	vertexTextureCoords[0],
-		}
-	];
-	
-	for(var i=1; i<uniqueTextures.length; i++){
-		result.push(
-			[
-				{
-					verticies:		vertexPositions[i],
-					vertexCount:	vertexCount[i],
-					textureCoords:	vertexTextureCoords[i],
-				}
-			]
-		);
-	}
-	return result;	
+	return true;	
 }
 
 objjs.loadObject = function loadObject(fileName) {

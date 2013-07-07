@@ -9,21 +9,21 @@ var pMatrix = mat4.create();
 
 var currentlyPressedKeys = {};
 
-var pitch = 0;
-var pitchRate = 0;
+var pitch = 0; //del
+var pitchRate = 0; //del
 
-var yaw = 0;
-var yawRate = 0;
-var xPos = 0;
-var yPos = 0.4;
-var zPos = 0;
-var xPosBall = 0;
-var yPosBall = 0.4;
-var zPosBall = 0;
-var speed = 0;
+var yaw = 0; //del
+var yawRate = 0; //del
+var xPos = 0; //del
+var yPos = 0.4; //del
+var zPos = 0; //del
+var xPosBall = 0; //del
+var yPosBall = 0.4; //del
+var zPosBall = 0; //del
+var speed = 0; //del
 
-var objVertexPositionBuffer = [];
-var objVertexTextureCoordBuffer = [];
+var objVertexPositionBuffer = []; //del
+var objVertexTextureCoordBuffer = []; //del
 var allTex = [];
 var allTexCount = -1;
 var allTexLength = [];
@@ -32,6 +32,37 @@ var uniqueTextures = [];
 var lastTime = 0;
 // Used to make us "jog" up and down as we move forward.
 var joggingAngle = 0;
+
+var objects = [
+	{
+		name:							'', //ect: ball, map, player
+		type: 							0, 	//0=fixed, 1=moves
+		minX:							null, 	//For collision detection
+		maxX:							null,	//For collision detection
+		minY:							null,	//For collision detection
+		maxY:							null,	//For collision detection
+		minZ:							null,	//For collision detection
+		maxZ:							null,	//For collision detection
+		xPos:							0,	
+		yPos:							0,
+		zPos:							0,
+		pitch:							0,
+		pitchRate:						0,
+		yaw:							0,
+		yawRate:						0,
+		speed:							0,
+		lives:							0, 	//For player
+		score:							0, 	//For player
+		timeInAir:						0, 	//For Physics
+		vertexPositions:				[],		
+		vertexTextureCoords:			[],
+		vertexCount:					[],
+		objVertexPositionBuffer:		[],
+		objVertexTextureCoordBuffer:	[],
+		textures: 						[],
+		objTexture:						[]
+	}
+];
 
 function initGL(canvas) {
     try {
@@ -173,37 +204,41 @@ function drawScene() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    if (objVertexTextureCoordBuffer[0] == null || objVertexPositionBuffer[0] == null || objVertexTextureCoordBuffer[1] == null || objVertexPositionBuffer[1] == null) {
+    /*if (objVertexTextureCoordBuffer[0] == null || objVertexPositionBuffer[0] == null || objVertexTextureCoordBuffer[1] == null || objVertexPositionBuffer[1] == null) {
         return;
-    }
+    }*/
 
     mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);    
 	
+	var a=0;
 	//Set all buffers and invoke all draws
-	for(var i=0; i<uniqueTextures.length; i++){
-		mat4.identity(mvMatrix);
-		
-		mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
-	    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-	    if(i==2){
-		    mat4.translate(mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
-	    }else{
-		    mat4.translate(mvMatrix, [-xPos, -yPos, -zPos]);
-	    }
-	    
-	    
-        gl.bindBuffer(gl.ARRAY_BUFFER, objVertexTextureCoordBuffer[i]);
-		gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, objVertexTextureCoordBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
-		
-		gl.bindBuffer(gl.ARRAY_BUFFER, objVertexPositionBuffer[i]);
-		gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, objVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, texture[i]); 
-		gl.uniform1i(shaderProgram.samplerUniform, 0);
-		
-		setMatrixUniforms();	
-		
-		gl.drawArrays(gl.TRIANGLES, 0, objVertexPositionBuffer[i].numItems);
+	for(var i=1; i<objects.length; i++){
+		for(var ii=0; ii<objects[i].textures.length; ii++){
+			mat4.identity(mvMatrix);
+			
+			mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
+		    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
+		    if(i==2){
+			    mat4.translate(mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
+		    }else{
+			    mat4.translate(mvMatrix, [-xPos, -yPos, -zPos]);
+		    }
+		    
+	        gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexTextureCoordBuffer[ii]);
+			gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, objects[i].objVertexTextureCoordBuffer[ii].itemSize, gl.FLOAT, false, 0, 0);
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexPositionBuffer[ii]);
+			gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, objects[i].objVertexPositionBuffer[ii].itemSize, gl.FLOAT, false, 0, 0);
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, texture[a]); 
+			gl.uniform1i(shaderProgram.samplerUniform, 0);
+			
+			setMatrixUniforms();
+			
+			gl.drawArrays(gl.TRIANGLES, 0, objects[i].objVertexPositionBuffer[ii].numItems);
+			
+			a++;
+		}
 	}
 }
 
@@ -211,7 +246,12 @@ function animate() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
         var elapsed = timeNow - lastTime;
-
+		
+		//for(var i=1; i<objects.length; i++){
+			if(objects[2].name.match("/e/g")){
+				alert(objects[2].name);
+			}
+		//}
         if (speed != 0) {
             xPos -= Math.sin(degToRad(yaw)) * speed * elapsed;
             zPos -= Math.cos(degToRad(yaw)) * speed * elapsed;
@@ -244,12 +284,8 @@ function webGLStart() {
     var canvas = document.getElementById("webGL");
     initGL(canvas);
     initShaders();
-    //Load Map
-    objjs.initTexture('glMap', gl);
     objjs.loadObject('glMap');
-    //Load Dodge Ball
-    //objjs.initTexture('dodgeBall', gl);
-    //objjs.loadObject('dodgeBall');
+    objjs.initTexture('glMap', gl);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
