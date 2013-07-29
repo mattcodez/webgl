@@ -217,8 +217,8 @@ function handleMotion(){
 	http://www.apache.org/licenses/LICENSE-2.0	
 	**/
 
-	yaw -= degToRad(xPos * 100);
-	pitch -= degToRad(yPos * 100);
+	yaw -= degToRad(cameraPan[0] * 100);
+	pitch -= degToRad(cameraPan[1] * 100);
 
 	crouchingDelta = motion.crouching ? -3 : 0;
 
@@ -279,7 +279,7 @@ function drawScene() {
 		    if(i==2){
 			    mat4.translate(mvMatrix, mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
 		    }else{
-			    mat4.translate(mvMatrix, mvMatrix, [-xPos, -(yPos+ crouchingDelta), -zPos]);
+			    mat4.translate(mvMatrix, mvMatrix, [-cameraPan[0], -(cameraPan[1] + crouchingDelta), -cameraPan[2]]);
 		    }
 		    
 	        gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexTextureCoordBuffer[ii]);
@@ -311,8 +311,8 @@ function animate() {
 			//}
 		//}
         if (speed != 0) {
-            xPos -= Math.sin(degToRad(yaw)) * speed * elapsed;
-            zPos -= Math.cos(degToRad(yaw)) * speed * elapsed;
+            cameraPan[0] -= Math.sin(degToRad(yaw)) * speed * elapsed;
+            cameraPan[2] -= Math.cos(degToRad(yaw)) * speed * elapsed;
             
             xPosBall -= Math.sin(degToRad(yaw)) * speed * elapsed;
             zPosBall -= Math.cos(degToRad(yaw)) * speed * elapsed;
@@ -333,7 +333,7 @@ function tick() {
 	xPosBall -= .001;
     zPosBall -= 0;
     requestAnimFrame(tick);
-    handleMotion();
+    //handleMotion();
     //handleKeys();
     drawScene();
     //animate();
