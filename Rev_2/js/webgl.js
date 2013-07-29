@@ -146,6 +146,9 @@ function initShaders() {
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 }
 
+var mvMatrix = mat4.create();
+var mvMatrixStack = [];
+var pMatrix = mat4.create();
 function mvPushMatrix() {
     var copy = mat4.create();
     mat4.set(mvMatrix, copy);
@@ -167,47 +170,15 @@ function setMatrixUniforms() {
 function degToRad(degrees) {
     return degrees * Math.PI / 180;
 }
-	
-/*function handleKeyDown(event) {
-    currentlyPressedKeys[event.keyCode] = true;
-}
 
-function handleKeyUp(event) {
-    currentlyPressedKeys[event.keyCode] = false;
-}*/
-	
-function handleKeys() {
-    if (currentlyPressedKeys[33]) {
-        // Page Up
-        pitchRate = 0.1;
-    } else if (currentlyPressedKeys[34]) {
-        // Page Down
-        pitchRate = -0.1;
-    } else {
-        pitchRate = 0;
-    }
+var cameraPos = [-5, 7, 4];
+var cameraLook = [-5, 7, 5]; 
+var cameraPan = [0,0,0]; //Z will always be zero
+var cameraUp = [0,1,0]; //Static
 
-    if (currentlyPressedKeys[37] || currentlyPressedKeys[65]) {
-        // Left cursor key or A
-        yawRate = 0.1;
-    } else if (currentlyPressedKeys[39] || currentlyPressedKeys[68]) {
-        // Right cursor key or D
-        yawRate = -0.1;
-    } else {
-        yawRate = 0;
-    }
+var pitch = degToRad(-27);
+var yaw = degToRad(-20);
 
-    if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
-        // Up cursor key or W
-        speed = 0.003;
-    } else if (currentlyPressedKeys[40] || currentlyPressedKeys[83]) {
-        // Down cursor key
-        speed = -0.003;
-    } else {
-        speed = 0;
-    }
-
-}
 
 function handleMotion(){
 	/**	
@@ -217,8 +188,8 @@ function handleMotion(){
 	http://www.apache.org/licenses/LICENSE-2.0	
 	**/
 
-	yaw -= degToRad(xPos * 100);
-	pitch -= degToRad(yPos * 100);
+	yaw -= degToRad(cameraPan[0] * 100);
+	pitch -= degToRad(cameraPan[1] * 100);
 
 	crouchingDelta = motion.crouching ? -3 : 0;
 
@@ -274,12 +245,13 @@ function drawScene() {
 		for(var ii=0; ii<objects[i].textures.length; ii++){
 			mat4.identity(mvMatrix);
 			
-			mat4.rotate(mvMatrix, mvMatrix, degToRad(-pitch), [1, 0, 0]);
-		    mat4.rotate(mvMatrix, mvMatrix, degToRad(-yaw), [0, 1, 0]);
+			mat4.rotateX(mvMatrix, mvMatrix, -pitch);
+			mat4.rotateY(mvMatrix, mvMatrix, -yaw);
+			
 		    if(i==2){
 			    mat4.translate(mvMatrix, mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
 		    }else{
-			    mat4.translate(mvMatrix, mvMatrix, [-xPos, -(yPos+ crouchingDelta), -zPos]);
+			    mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1]+ crouchingDelta), -cameraPos[2]]);
 		    }
 		    
 	        gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexTextureCoordBuffer[ii]);
@@ -300,43 +272,12 @@ function drawScene() {
 	}
 }
 
-function animate() {
-    var timeNow = new Date().getTime();
-    if (lastTime != 0) {
-        var elapsed = timeNow - lastTime;
-		
-		//for(var i=1; i<objects.length; i++){
-			//if(objects[2].name.match("/e/g")){
-			//	alert(objects[2].name);
-			//}
-		//}
-        if (speed != 0) {
-            xPos -= Math.sin(degToRad(yaw)) * speed * elapsed;
-            zPos -= Math.cos(degToRad(yaw)) * speed * elapsed;
-            
-            xPosBall -= Math.sin(degToRad(yaw)) * speed * elapsed;
-            zPosBall -= Math.cos(degToRad(yaw)) * speed * elapsed;
-
-            joggingAngle += elapsed * 0.6; // 0.6 "fiddle factor" - makes it feel more realistic :-)
-            yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4;
-            yPosBall = Math.sin(degToRad(joggingAngle)) / 20 + 0.4;
-        }
-
-        yaw += yawRate * elapsed;
-        pitch += pitchRate * elapsed;
-
-    }
-    lastTime = timeNow;
-}
-
 function tick() {
 	xPosBall -= .001;
     zPosBall -= 0;
     requestAnimFrame(tick);
     handleMotion();
-    //handleKeys();
     drawScene();
-    //animate();
 }
 
 function webGLStart() {
