@@ -49,26 +49,26 @@ function handleKeyUp(event){
 	switch(event.which){
 		case 87: // "W"
 		case 38: // "forward arrow"
-			motion.forward = true;
+			motion.forward = false;
 			break;
 
 		case 83: // "S"
 		case 40: // "backward arrow"
-			motion.backward = true;
+			motion.backward = false;
 			break;
 
 		case 65: // "A"
 		case 37: // "left arrow"
-			motion.strafeLeft = true;
+			motion.strafeLeft = false;
 			break;
 
 		case 68: // "D"
 		case 39: // "right arrow"
-			motion.strafeRight = true;
+			motion.strafeRight = false;
 			break;
 
 		case 17: // Ctrl
-			motion.crouching = true;
+			motion.crouching = false;
 			break;
 	}
 }
