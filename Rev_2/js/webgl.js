@@ -246,16 +246,12 @@ function drawScene() {
 			mat4.identity(mvMatrix);
 			
 			mat4.rotateX(mvMatrix, mvMatrix, -pitch);
-			mat4.rotateY(mvMatrix, mvMatrix, -yaw);
+     		mat4.rotateY(mvMatrix, mvMatrix, -yaw);
 			
 		    if(i==2){
 			    mat4.translate(mvMatrix, mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
 		    }else{
-<<<<<<< HEAD
-			    mat4.translate(mvMatrix, mvMatrix, [-cameraPan[0], -(cameraPan[1] + crouchingDelta), -cameraPan[2]]);
-=======
 			    mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1]+ crouchingDelta), -cameraPos[2]]);
->>>>>>> a9eaca3ac12923b43c1efe26a22df7d7b9b0358b
 		    }
 		    
 	        gl.bindBuffer(gl.ARRAY_BUFFER, objects[i].objVertexTextureCoordBuffer[ii]);
@@ -276,48 +272,11 @@ function drawScene() {
 	}
 }
 
-<<<<<<< HEAD
-function animate() {
-    var timeNow = new Date().getTime();
-    if (lastTime != 0) {
-        var elapsed = timeNow - lastTime;
-		
-		//for(var i=1; i<objects.length; i++){
-			//if(objects[2].name.match("/e/g")){
-			//	alert(objects[2].name);
-			//}
-		//}
-        if (speed != 0) {
-            cameraPan[0] -= Math.sin(degToRad(yaw)) * speed * elapsed;
-            cameraPan[2] -= Math.cos(degToRad(yaw)) * speed * elapsed;
-            
-            xPosBall -= Math.sin(degToRad(yaw)) * speed * elapsed;
-            zPosBall -= Math.cos(degToRad(yaw)) * speed * elapsed;
-
-            joggingAngle += elapsed * 0.6; // 0.6 "fiddle factor" - makes it feel more realistic :-)
-            yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4;
-            yPosBall = Math.sin(degToRad(joggingAngle)) / 20 + 0.4;
-        }
-
-        yaw += yawRate * elapsed;
-        pitch += pitchRate * elapsed;
-
-    }
-    lastTime = timeNow;
-}
-
-=======
->>>>>>> a9eaca3ac12923b43c1efe26a22df7d7b9b0358b
 function tick() {
 	xPosBall -= .001;
     zPosBall -= 0;
     requestAnimFrame(tick);
-<<<<<<< HEAD
-    //handleMotion();
-    //handleKeys();
-=======
     handleMotion();
->>>>>>> a9eaca3ac12923b43c1efe26a22df7d7b9b0358b
     drawScene();
 }
 
