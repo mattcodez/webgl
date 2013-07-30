@@ -187,26 +187,22 @@ function handleMotion(){
 	http://www.html5rocks.com/en/tutorials/pointerlock/intro/
 	http://www.apache.org/licenses/LICENSE-2.0	
 	**/
+	
+	var floor = 1;
 
 	yaw -= degToRad(cameraPan[0] * 100);
 	pitch -= degToRad(cameraPan[1] * 100);
 
-	crouchingDelta = motion.crouching ? -3 : 0;
+	crouchingDelta = motion.crouching ? -0.5 : 0;
 
 	var forwardDirection = vec3.create(cameraLook);
 	vec3.subtract(forwardDirection, cameraLook, cameraPos);
 
-	//vec3.subtract(this.lookAtPoint, this.eyePoint, frontDirection);
+	//Changing direction based on camera pos change
 	vec3.normalize(forwardDirection, forwardDirection);
 	var q = quat.create();
-	// Construct quaternion 
 	quat.setAxisAngle(q, cameraUp, yaw);
-	// Rotate camera look vector
-	//quat.multiplyVec3(q, forwardDirection);
 	vec3.transformQuat(forwardDirection, forwardDirection, q);
-	// Update camera look vector
-	//this.lookAtPoint = vec3.create(this.eyePoint);
-	//vec3.add(this.lookAtPoint, frontDirection);
 
 	var strafeScale = 0.0;
 	strafeScale += motion.strafeLeft ? 1.0 : 0.0;
@@ -224,6 +220,24 @@ function handleMotion(){
 	vec3.scale(forwardDirection, forwardDirection, forwardScale * movementSpeed);
 	var allMovement = vec3.create();
 	vec3.add(allMovement, strafeMovement, forwardDirection);
+	
+	//Really simple gravity, eventually want collision detection with floor
+	//And an accelerated fall
+	if (cameraPos[1] > floor){
+		var gravitySpeed = -0.1;
+		vec3.add(allMovement, allMovement, [0, gravitySpeed, 0]);
+	}
+	
+	//Really simple jumping
+	var jumpHeight = 3;
+	if (motion.jump){
+		if (cameraPos[1] <= floor || cameraPos[1] < jumpHeight){
+			vec3.add(allMovement, allMovement, [0, 0.2, 0]);
+		}
+		else {
+			motion.jump = false;
+		}
+	}
 
 	vec3.add(cameraPos, cameraPos, allMovement);
 	vec3.add(cameraLook, cameraLook, allMovement);

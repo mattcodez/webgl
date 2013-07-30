@@ -40,6 +40,10 @@ function handleKeyDown(event){
 		case 17: // Ctrl
 			motion.crouching = true;
 			break;
+			
+		case 32: // Sapce
+			motion.jump = true;
+			break;
 	}
 }
 
