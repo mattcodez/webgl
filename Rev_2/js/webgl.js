@@ -257,8 +257,8 @@ function handleMotion(world){
 	vec3.transformQuat(forwardDirection, forwardDirection, q);
 
 	var strafeScale = 0.0;
-	strafeScale += motion.strafeLeft ? 1.0 : 0.0;
-	strafeScale -= motion.strafeRight ? 1.0 : 0.0;
+	strafeScale += motion.strafeLeft ? world.players[0].speed : 0.0;
+	strafeScale -= motion.strafeRight ? world.players[0].speed : 0.0;
 	var strafeMovement = vec3.create();
 	if (strafeScale !== 0.0){
 		vec3.cross(strafeMovement, forwardDirection, cameraUp);
@@ -266,8 +266,8 @@ function handleMotion(world){
 	}
 
 	var forwardScale = 0.0;
-	forwardScale += motion.backward ? 1.0 : 0.0;
-	forwardScale -= motion.forward ? 1.0 : 0.0;
+	forwardScale += motion.backward ? world.players[0].speed : 0.0;
+	forwardScale -= motion.forward ? world.players[0].speed : 0.0;
 
 	vec3.scale(forwardDirection, forwardDirection, forwardScale * movementSpeed);
 	var allMovement = vec3.create();
