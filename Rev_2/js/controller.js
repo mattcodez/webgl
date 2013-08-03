@@ -41,8 +41,12 @@ function handleKeyDown(event){
 			motion.crouching = true;
 			break;
 			
-		case 32: // Sapce
+		case 32: // Space
 			motion.jump = true;
+			break;
+			
+		case 70: // F -> Temporary for testing
+			motion.fire = true;
 			break;
 	}
 }
@@ -73,6 +77,10 @@ function handleKeyUp(event){
 
 		case 17: // Ctrl
 			motion.crouching = false;
+			break;
+			
+		case 70: // F
+			motion.fire = false;
 			break;
 	}
 }

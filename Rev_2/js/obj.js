@@ -241,12 +241,13 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 	return true;	
 }
 
-objjs.loadObject = function loadObject(fileName) {
+objjs.loadObject = function loadObject(fileName, callback) {
     var request = new XMLHttpRequest();
     request.open("GET", fileName+'.obj');
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
             objjs.handleLoadedObject(request.responseText);
+			callback && callback();
         }
     }
     request.send();

@@ -179,8 +179,21 @@ var cameraUp = [0,1,0]; //Static
 var pitch = degToRad(-27);
 var yaw = degToRad(-20);
 
+function initBalls(){
+	var balls = [];
+	
+	for (var i = 0; i < objects.length; i++){
+		var obj = objects[i];
+		if (obj.name.match(/dodgeball/i)){
+			//Not sure if we need everything in objects but we'll pass it all in for now
+			balls.push(new Ball(obj)); 
+		}
+	}
+	
+	return balls;
+}
 
-function handleMotion(){
+function handleMotion(world){
 	/**	
 	Some of the math code taken from the HTML5 Rocks PointerLock tutorial
 	under the Apache 2.0 Licence
@@ -192,14 +205,30 @@ function handleMotion(){
 
 	//Add positions the our objects position stack
 	for(var i=1; i<objects.length; i++){
-		if(objects[i].type == '1'){ //Moves
-			//Need to add additional physics to objects
-			objects[i].cameraPos.push([(cameraPos[0] + xPosBall), ((cameraPos[1]+ crouchingDelta) + yPosBall), (cameraPos[2] + xPosBall)]);
-		}else{
-			objects[i].cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
+		var obj = objects[i];
+		
+		if (obj.type == '1'){ //Moves
 		}
-		if(objects[i].cameraPos.length > 100){ //Will keep a stack of 100 for now
-			objects[i].cameraPos.shift();
+		else{
+			obj.cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
+		}
+		
+		if(obj.cameraPos.length > 100){ //Will keep a stack of 100 for now
+			obj.cameraPos.shift();
+		}
+	}
+	
+	var gravity = [0, -0.1, 0];
+	
+	for (var i = 0; i < world.balls.length; i++){
+		var ball = world.balls[i];
+		if (motion.fire){
+			ball.fireFromTo(cameraPos, cameraLook);
+			motion.fire = false;
+		}
+		else {
+			ball.applyGravity(gravity);
+			ball.move();
 		}
 	}
 
@@ -236,7 +265,6 @@ function handleMotion(){
 	
 	//Really simple gravity, eventually want collision detection with floor
 	//And an accelerated fall
-	var gravity = [0, -0.1, 0];
 	if (cameraPos[1] > floor){
 		vec3.add(allMovement, allMovement, gravity);
 	}
@@ -257,7 +285,7 @@ function handleMotion(){
 	vec3.add(cameraLook, cameraLook, allMovement);
 }
 
-function drawScene() {
+function drawScene(world) {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -277,7 +305,8 @@ function drawScene() {
      		mat4.rotateY(mvMatrix, mvMatrix, -yaw);
 			
 		    if(i==2){
-			    mat4.translate(mvMatrix, mvMatrix, [-(cameraPos[0] + xPosBall), -((cameraPos[1]+ crouchingDelta) + yPosBall), -(cameraPos[2] + zPosBall)]);
+				//We're cheating because we know object 2 is the only ball
+			    mat4.translate(mvMatrix, mvMatrix, world.balls[0] ? world.balls[0].getPosition() : [0,0,0]);
 		    }else{
 			    mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1]+ crouchingDelta), -cameraPos[2]]);
 		    }
@@ -300,12 +329,12 @@ function drawScene() {
 	}
 }
 
-function tick() {
-	xPosBall -= .001;
-    zPosBall -= 0;
-    requestAnimFrame(tick);
-    handleMotion();
-    drawScene();
+function tick(world) {
+	//xPosBall -= .001;
+    //zPosBall -= 0;
+    requestAnimFrame(tick.bind(null, world));
+    handleMotion(world);
+    drawScene(world);
 }
 
 function webGLStart() {
@@ -319,11 +348,19 @@ function webGLStart() {
 			document.removeEventListener("mousemove", onMouseMove, false);
 		}
 	}
+	
+	var balls;
 		
 	var canvas = document.getElementById("webGL");
     initGL(canvas);
     initShaders();
-    objjs.loadObject('glMap');
+    objjs.loadObject('glMap', function(){
+		balls = initBalls();
+		var world = {
+			balls: balls
+		};
+		tick(world);
+	});
     objjs.initTexture('glMap', gl);
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -340,5 +377,5 @@ function webGLStart() {
 
 	var exitPointerLock = document.webkitExitPointerLock;
 	
-    tick();
+    //tick(world);
 }
