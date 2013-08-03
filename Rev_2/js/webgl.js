@@ -223,9 +223,9 @@ function handleMotion(){
 	
 	//Really simple gravity, eventually want collision detection with floor
 	//And an accelerated fall
+	var gravity = [0, -0.1, 0];
 	if (cameraPos[1] > floor){
-		var gravitySpeed = -0.1;
-		vec3.add(allMovement, allMovement, [0, gravitySpeed, 0]);
+		vec3.add(allMovement, allMovement, gravity);
 	}
 	
 	//Really simple jumping
