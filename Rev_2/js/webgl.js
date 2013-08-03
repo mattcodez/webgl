@@ -263,7 +263,7 @@ function drawScene() {
      		mat4.rotateY(mvMatrix, mvMatrix, -yaw);
 			
 		    if(i==2){
-			    mat4.translate(mvMatrix, mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
+			    mat4.translate(mvMatrix, mvMatrix, [-(cameraPos[0] + xPosBall), -((cameraPos[1]+ crouchingDelta) + yPosBall), -(cameraPos[2] + zPosBall)]);
 		    }else{
 			    mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1]+ crouchingDelta), -cameraPos[2]]);
 		    }
