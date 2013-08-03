@@ -193,6 +193,16 @@ function initBalls(){
 	return balls;
 }
 
+function initPlayers(){
+	var players = [];
+	
+	for (var i = 0; i < 1; i++){
+		players.push(new Player()); 
+	}
+	
+	return players;
+}
+
 function handleMotion(world){
 	/**	
 	Some of the math code taken from the HTML5 Rocks PointerLock tutorial
@@ -235,7 +245,7 @@ function handleMotion(world){
 	yaw -= degToRad(cameraPan[0] * 100);
 	pitch -= degToRad(cameraPan[1] * 100);
 
-	crouchingDelta = motion.crouching ? -0.5 : 0;
+	crouchingDelta = world.players[0].crouch();
 
 	var forwardDirection = vec3.create(cameraLook);
 	vec3.subtract(forwardDirection, cameraLook, cameraPos);
@@ -269,20 +279,13 @@ function handleMotion(world){
 		vec3.add(allMovement, allMovement, gravity);
 	}
 	
-	//Really simple jumping
-	var jumpHeight = 3;
-	if (motion.jumpUp || motion.hitGround == false){
-		//console.log(objects[1].cameraPos[0][1] - objects[1].cameraPos[50][1]);
-		if ((cameraPos[1] <= floor || cameraPos[1] < jumpHeight) && motion.jumpUp){
-			vec3.add(allMovement, allMovement, [0, 0.2, 0]);
-		}
-		else{
-			motion.jumpUp = false;
-		}
-		if(cameraPos[1] <= floor){
-			motion.hitGround = true;
-		}
+	//Enviornment attributes
+	var env = {
+		floor: floor,
+		allMovement: allMovement
 	}
+	
+	world.players[0].jump(env);
 
 	vec3.add(cameraPos, cameraPos, allMovement);
 	vec3.add(cameraLook, cameraLook, allMovement);
@@ -353,14 +356,17 @@ function webGLStart() {
 	}
 	
 	var balls;
+	var players;
 		
 	var canvas = document.getElementById("webGL");
     initGL(canvas);
     initShaders();
     objjs.loadObject('glMap', function(){
 		balls = initBalls();
+		players = initPlayers();
 		var world = {
-			balls: balls
+			balls: balls,
+			players: players
 		};
 		tick(world);
 	});
