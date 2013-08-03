@@ -2,7 +2,7 @@
 var Player = function(){	
 	this.height = null;
 	this.speed = 1;
-	this.position = [];
+	this.cameraPos = [];
 	this.lives = null;
 	this.name = 'player1';
 	this.height = null;

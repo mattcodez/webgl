@@ -214,7 +214,7 @@ function handleMotion(world){
 	var floor = 1;
 
 	//Add positions the our objects position stack
-	for(var i=1; i<objects.length; i++){
+	for(var i=1; i<objects.length; i++){ //For this to be effective we need to actually draw the player as an object.
 		var obj = objects[i];
 		
 		if (obj.type == '1'){ //Moves
@@ -282,7 +282,8 @@ function handleMotion(world){
 	//Enviornment attributes
 	var env = {
 		floor: floor,
-		allMovement: allMovement
+		allMovement: allMovement,
+		gravity: gravity
 	}
 	
 	world.players[0].jump(env);
