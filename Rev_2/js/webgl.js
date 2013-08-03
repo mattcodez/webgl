@@ -271,13 +271,16 @@ function handleMotion(world){
 	
 	//Really simple jumping
 	var jumpHeight = 3;
-	if (motion.jump){
-		console.log(objects[1].cameraPos[0][1] - objects[1].cameraPos[50][1]);
-		if ((cameraPos[1] <= floor || cameraPos[1] < jumpHeight) && (objects[1].cameraPos[0][1] - objects[1].cameraPos[50][1]) >= 0){
+	if (motion.jumpUp || motion.hitGround == false){
+		//console.log(objects[1].cameraPos[0][1] - objects[1].cameraPos[50][1]);
+		if ((cameraPos[1] <= floor || cameraPos[1] < jumpHeight) && motion.jumpUp){
 			vec3.add(allMovement, allMovement, [0, 0.2, 0]);
 		}
-		else {
-			motion.jump = false;
+		else{
+			motion.jumpUp = false;
+		}
+		if(cameraPos[1] <= floor){
+			motion.hitGround = true;
 		}
 	}
 

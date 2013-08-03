@@ -42,7 +42,8 @@ function handleKeyDown(event){
 			break;
 			
 		case 32: // Space
-			motion.jump = true;
+			motion.jumpUp = (motion.hitGround == false ? false : true);
+			motion.hitGround = false;
 			break;
 			
 		case 70: // F -> Temporary for testing
