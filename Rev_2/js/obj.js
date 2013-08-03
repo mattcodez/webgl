@@ -58,27 +58,27 @@ objjs.handleLoadedObject = function handleLoadedObject(data) {
 				}
 			}
 			if(!isObj){
-				if(vals[2].substr(0, 8).toLowerCase() == 'dodgeball'){
+				if(vals[2].substr(0, 9).toLowerCase() == 'dodgeball'){
 					var objType=1;
-				}else if(vals[2].substr(0, 2).toLowerCase() == 'map'){
+				}else if(vals[2].substr(0, 3).toLowerCase() == 'map'){
 					var objType=0;
-				}else if(vals[2].substr(0, 5).toLowerCase() == 'player'){
+				}else if(vals[2].substr(0, 6).toLowerCase() == 'player'){
 					var objType=1;
 				}
-				
+
 				objects.push(
 					{
 						name:							vals[2], //ect: ball, map, player
-						type: 							objType, 	//0=fixed, 1=moves
+						type: 							objType, //0=fixed, 1=moves
 						minX:							null, 	//For collision detection
 						maxX:							null,	//For collision detection
 						minY:							null,	//For collision detection
 						maxY:							null,	//For collision detection
 						minZ:							null,	//For collision detection
 						maxZ:							null,	//For collision detection
-						xPos:							0,	
-						yPos:							0,
-						zPos:							0,
+						cameraPos:						[],	
+						cameraLook:						[],
+						cameraPan:						[],
 						pitch:							0,
 						pitchRate:						0,
 						yaw:							0,

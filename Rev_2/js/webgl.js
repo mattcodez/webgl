@@ -52,9 +52,9 @@ var objects = [
 		maxY:							null,	//For collision detection
 		minZ:							null,	//For collision detection
 		maxZ:							null,	//For collision detection
-		xPos:							0,	
-		yPos:							0,
-		zPos:							0,
+		cameraPos:						[],	
+		cameraLook:						[],
+		cameraPan:						[],
 		pitch:							0,
 		pitchRate:						0,
 		yaw:							0,
@@ -190,6 +190,19 @@ function handleMotion(){
 	
 	var floor = 1;
 
+	//Add positions the our objects position stack
+	for(var i=1; i<objects.length; i++){
+		if(objects[i].type == '1'){ //Moves
+			//Need to add additional physics to objects
+			objects[i].cameraPos.push([(cameraPos[0] + xPosBall), ((cameraPos[1]+ crouchingDelta) + yPosBall), (cameraPos[2] + xPosBall)]);
+		}else{
+			objects[i].cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
+		}
+		if(objects[i].cameraPos.length > 100){ //Will keep a stack of 100 for now
+			objects[i].cameraPos.shift();
+		}
+	}
+
 	yaw -= degToRad(cameraPan[0] * 100);
 	pitch -= degToRad(cameraPan[1] * 100);
 
@@ -231,7 +244,8 @@ function handleMotion(){
 	//Really simple jumping
 	var jumpHeight = 3;
 	if (motion.jump){
-		if (cameraPos[1] <= floor || cameraPos[1] < jumpHeight){
+		console.log(objects[1].cameraPos[0][1] - objects[1].cameraPos[50][1]);
+		if ((cameraPos[1] <= floor || cameraPos[1] < jumpHeight) && (objects[1].cameraPos[0][1] - objects[1].cameraPos[50][1]) >= 0){
 			vec3.add(allMovement, allMovement, [0, 0.2, 0]);
 		}
 		else {
@@ -263,7 +277,7 @@ function drawScene() {
      		mat4.rotateY(mvMatrix, mvMatrix, -yaw);
 			
 		    if(i==2){
-			    mat4.translate(mvMatrix, mvMatrix, [-xPosBall, -yPosBall, -zPosBall]);
+			    mat4.translate(mvMatrix, mvMatrix, [-(cameraPos[0] + xPosBall), -((cameraPos[1]+ crouchingDelta) + yPosBall), -(cameraPos[2] + zPosBall)]);
 		    }else{
 			    mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1]+ crouchingDelta), -cameraPos[2]]);
 		    }
