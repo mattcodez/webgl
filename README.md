@@ -9,11 +9,16 @@ This is a dodgeball game. It will be built in native webgl and will have a compl
   <li>Modling Mesh Parser (Done)</li>
   <li>Ducking (Done)</li>
   <li>Strafing (Done)</li>
-  <li>Collision Detection (Matt McAlear)</li>
+  <li>Collision Detection (Matt McAlear)
+    <ul>
+      <li>Create position hash map</li>
+      <li>Get ball firing and colliding</li>
+    </ul>
+  </li>
   <li>Physics (Matt Molnar)
     <ul>
-      <li>Jumping</li>
-      <li>Gravity</li>
+      <li>Jumping (Done)</li>
+      <li>Gravity (Done)</li>
     </ul>
   </li>
   
