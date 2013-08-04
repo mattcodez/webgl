@@ -209,13 +209,17 @@ function handleMotion(world){
 	var floor = 1;
 
 	//Add positions the our objects position stack
-	for(var i=1; i<objects.length; i++){ //For this to be effective we need to actually draw the player as an object.
+	for(var i=1; i<objects.length; i++){ 
 		var obj = objects[i];
 		
-		if (obj.type == '1'){ //Moves
-		}
-		else{
+		if(obj.name.substr(0, 9).toLowerCase() == 'dodgeball'){
 			obj.cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
+		}else if(obj.name.substr(0, 3).toLowerCase() == 'map'){
+			obj.cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
+		}else if(obj.name.substr(0, 6).toLowerCase() == 'player'){
+			obj.cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
+			//Adding positions to actual object
+			world.players[0].cameraPos.push([cameraPos[0], (cameraPos[1]+ crouchingDelta), cameraPos[2]]);
 		}
 		
 		if(obj.cameraPos.length > 100){ //Will keep a stack of 100 for now
@@ -306,10 +310,11 @@ function drawScene(world) {
 			mat4.rotateX(mvMatrix, mvMatrix, -pitch);
      		mat4.rotateY(mvMatrix, mvMatrix, -yaw);
 			
-		    if(i==2){
-				//We're cheating because we know object 2 is the only ball
+		    if(objects[i].name.substr(0, 9).toLowerCase() == 'dodgeball'){
 			    mat4.translate(mvMatrix, mvMatrix, world.balls[0] ? world.balls[0].getPosition() : [0,0,0]);
-		    }else{
+		    }else if(objects[i].name.substr(0, 6) == 'player'){
+		    	//Don't want to move players
+		    }else if(objects[i].name.substr(0, 3).toLowerCase() == 'map'){
 			    mat4.translate(mvMatrix, mvMatrix, [-cameraPos[0], -(cameraPos[1]+ crouchingDelta), -cameraPos[2]]);
 		    }
 		    
