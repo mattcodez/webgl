@@ -22,11 +22,6 @@ var yPosBall = 0.4; //del
 var zPosBall = 0; //del
 var speed = 0; //del
 
-var cameraPos = [-5, 7, 4];
-var cameraLook = [-5, 7, 5]; 
-var cameraPan = [0,0,0]; //Z will always be zero
-var cameraUp = [0,1,0]; //Static
-
 var movementSpeed = 0.1;
 var cameraPanSpeed = 0.2;
 var crouchingDelta = 0;

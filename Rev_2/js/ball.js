@@ -25,14 +25,12 @@ Ball.prototype.fireFromTo = function (start, towards){
 	vec3.normalize(direction, direction);
 	var velocity = vec3.create();
 	vec3.multiply(velocity, direction, this.fireMagnitude);
+	this.velocity = velocity;
 };
 
 //Move based on current velocity, to be fired with engine tick
 Ball.prototype.move = function (){
-	if (!this.isMoving()){
-		return; //Not moving so don't bother with math
-	}
-	else {
+	if (this.isMoving()){
 		vec3.add(this.position, this.position, this.velocity);
 	}
 };
@@ -51,5 +49,5 @@ Ball.prototype.getPosition = function (){
 
 Ball.prototype.isMoving = function (){
 	var v = this.velocity;
-	return !(v[0] == v[1] == v[2] == 0);
+	return !(v[0] == 0 && v[1] == 0 && v[2] == 0);
 };
