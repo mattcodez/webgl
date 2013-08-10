@@ -20,11 +20,8 @@ Ball.prototype.fireFromTo = function (start, towards){
 	
 	this.position = start.slice(0);
 	
-	var direction = vec3.create();
-	vec3.subtract(direction, start, towards);
-	vec3.normalize(direction, direction);
 	var velocity = vec3.create();
-	vec3.multiply(velocity, direction, this.fireMagnitude);
+	vec3.multiply(velocity, towards, this.fireMagnitude);
 	this.velocity = velocity;
 };
 

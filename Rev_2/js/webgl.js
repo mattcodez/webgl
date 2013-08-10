@@ -228,18 +228,6 @@ function handleMotion(world){
 	}
 	
 	var gravity = [0, -0.1, 0];
-	
-	for (var i = 0; i < world.balls.length; i++){
-		var ball = world.balls[i];
-		if (motion.fire){
-			ball.fireFromTo(cameraPos, cameraLook);
-			motion.fire = false;
-		}
-		else {
-			ball.applyGravity(gravity);
-			ball.move();
-		}
-	}
 
 	yaw -= degToRad(cameraPan[0] * 100);
 	pitch -= degToRad(cameraPan[1] * 100);
@@ -254,6 +242,19 @@ function handleMotion(world){
 	var q = quat.create();
 	quat.setAxisAngle(q, cameraUp, yaw);
 	vec3.transformQuat(forwardDirection, forwardDirection, q);
+	//NOTE: I think the above works by luck, cameraLook appears to be wrong
+	
+	for (var i = 0; i < world.balls.length; i++){
+		var ball = world.balls[i];
+		if (motion.fire){
+			ball.fireFromTo(cameraPos, forwardDirection);
+			motion.fire = false;
+		}
+		else {
+			ball.applyGravity(gravity);
+			ball.move();
+		}
+	}
 
 	var strafeScale = 0.0;
 	strafeScale += motion.strafeLeft ? world.players[0].speed : 0.0;
