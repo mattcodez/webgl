@@ -1,14 +1,26 @@
-For Y (most common form): y = mx + b
+"use strict";
+var Collision = function(obj){
+	this.obj = obj;
+	
+	this.container = null;
+};
 
-For X (based on the above): x = (y – b) / m
+Collision.prototype = {};
 
-Calculating m (line slope): m = (y2 – y1) / (x2 – x1)
+Collision.prototype.init = function(){
+	this.setContainer();
+	
+	
+}
 
-Combine with Pythagorean theorem (C * C = A * A + B * B, where A and B is an X, Y value):
+Collision.prototype.checkCollision = function(o1, o2){
+	if(o1.position[0] == 0
+}
 
-Distance for a ‘y’ intercept point, where y = 1, 2, 3…
-distanceY = ((y – b) / m * (y – b) / m) + (y * y)
-(ignoring the square root)
-
-Distance for a ‘x’ intercept point, where x = 1, 2, 3…
-distanceX = (x * x) + ((mx + b) * (mx + b))
+Collision.prototype.setContainer = function(){
+	for(var i=0; i<this.obj.length; i++){
+		if(this.obj[i].name.substr(0, 3).toLowerCase() == 'map'){
+			this.container = obj[i];
+		}
+	}
+}
